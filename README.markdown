@@ -90,6 +90,11 @@ settings, and reused between parses.
                     values can be enclosed in parenthesis,
                     e.g. `this is the 2^(nd) time`
 
+                :b_and_i_variants - parse single and double underscore emphasis
+                    as `<i>` and `<b>` respectively, while single and double
+                    asterisks continue to generate `<em>` and `<strong>`.
+                    Triple emphasis just gets weird.
+
     Example:
 
         markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML,

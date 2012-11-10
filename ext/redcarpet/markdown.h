@@ -59,6 +59,7 @@ enum mkd_extensions {
 	MKDEXT_SPACE_HEADERS = (1 << 6),
 	MKDEXT_SUPERSCRIPT = (1 << 7),
 	MKDEXT_LAX_SPACING = (1 << 8),
+	MKDEXT_B_AND_I_VARIANTS = (1 << 9),
 };
 
 /* sd_callbacks - functions for rendering parsed data */
@@ -89,6 +90,10 @@ struct sd_callbacks {
 	int (*triple_emphasis)(struct buf *ob, const struct buf *text, void *opaque);
 	int (*strikethrough)(struct buf *ob, const struct buf *text, void *opaque);
 	int (*superscript)(struct buf *ob, const struct buf *text, void *opaque);
+	int (*emphasis_b_and_i)(struct buf *ob, const struct buf *text, void *opaque);
+	int (*double_emphasis_b_and_i)(struct buf *ob, const struct buf *text, void *opaque);
+	int (*triple_emphasis_underscores_b_and_i)(struct buf *ob, const struct buf *text, void *opaque);
+	int (*triple_emphasis_asterisks_b_and_i)(struct buf *ob, const struct buf *text, void *opaque);
 
 	/* low level callbacks - NULL copies input directly into the output */
 	void (*entity)(struct buf *ob, const struct buf *entity, void *opaque);

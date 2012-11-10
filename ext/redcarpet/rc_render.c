@@ -207,6 +207,30 @@ rndr_superscript(struct buf *ob, const struct buf *text, void *opaque)
 	SPAN_CALLBACK("superscript", 1, buf2str(text));
 }
 
+static int
+rndr_emphasis_b_and_i(struct buf *ob, const struct buf *text, void *opaque)
+{
+	SPAN_CALLBACK("emphasis_b_and_i", 1, buf2str(text));
+}
+
+static int
+rndr_double_emphasis_b_and_i(struct buf *ob, const struct buf *text, void *opaque)
+{
+	SPAN_CALLBACK("double_emphasis_b_and_i", 1, buf2str(text));
+}
+
+static int
+rndr_triple_emphasis_underscores_b_and_i(struct buf *ob, const struct buf *text, void *opaque)
+{
+	SPAN_CALLBACK("triple_emphasis_underscores_b_and_i", 1, buf2str(text));
+}
+
+static int
+rndr_triple_emphasis_asterisks_b_and_i(struct buf *ob, const struct buf *text, void *opaque)
+{
+	SPAN_CALLBACK("triple_emphasis_asterisks_b_and_i", 1, buf2str(text));
+}
+
 /**
  * direct writes
  */
@@ -279,6 +303,10 @@ static struct sd_callbacks rb_redcarpet_callbacks = {
 	rndr_triple_emphasis,
 	rndr_strikethrough,
 	rndr_superscript,
+	rndr_emphasis_b_and_i,
+	rndr_double_emphasis_b_and_i,
+	rndr_triple_emphasis_underscores_b_and_i,
+	rndr_triple_emphasis_asterisks_b_and_i,
 
 	rndr_entity,
 	rndr_normal_text,
@@ -311,6 +339,10 @@ static const char *rb_redcarpet_method_names[] = {
 	"triple_emphasis",
 	"strikethrough",
 	"superscript",
+	"emphasis_b_and_i",
+	"double_emphasis_b_and_i",
+	"triple_emphasis_underscores_b_and_i",
+	"triple_emphasis_asterisks_b_and_i",
 
 	"entity",
 	"normal_text",

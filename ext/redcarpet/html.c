@@ -479,6 +479,49 @@ rndr_superscript(struct buf *ob, const struct buf *text, void *opaque)
 	return 1;
 }
 
+static int
+rndr_emphasis_b_and_i(struct buf *ob, const struct buf *text, void *opaque)
+{
+	if (!text || !text->size) return 0;
+	BUFPUTSL(ob, "<i>");
+	if (text) bufput(ob, text->data, text->size);
+	BUFPUTSL(ob, "</i>");
+	return 1;
+}
+
+static int
+rndr_double_emphasis_b_and_i(struct buf *ob, const struct buf *text, void *opaque)
+{
+	if (!text || !text->size)
+		return 0;
+
+	BUFPUTSL(ob, "<b>");
+	bufput(ob, text->data, text->size);
+	BUFPUTSL(ob, "</b>");
+
+	return 1;
+}
+
+static int
+rndr_triple_emphasis_underscores_b_and_i(struct buf *ob, const struct buf *text, void *opaque)
+{
+	if (!text || !text->size) return 0;
+	BUFPUTSL(ob, "<strong><i>");
+	bufput(ob, text->data, text->size);
+	BUFPUTSL(ob, "</i></strong>");
+	return 1;
+}
+
+static int
+rndr_triple_emphasis_asterisks_b_and_i(struct buf *ob, const struct buf *text, void *opaque)
+{
+	if (!text || !text->size) return 0;
+	BUFPUTSL(ob, "<b><em>");
+	bufput(ob, text->data, text->size);
+	BUFPUTSL(ob, "</em></b>");
+	return 1;
+}
+
 static void
 rndr_normal_text(struct buf *ob, const struct buf *text, void *opaque)
 {
@@ -566,6 +609,10 @@ sdhtml_toc_renderer(struct sd_callbacks *callbacks, struct html_renderopt *optio
 		rndr_triple_emphasis,
 		rndr_strikethrough,
 		rndr_superscript,
+		NULL,
+		rndr_double_emphasis,
+		rndr_triple_emphasis,
+		rndr_triple_emphasis,
 
 		NULL,
 		NULL,
@@ -607,6 +654,10 @@ sdhtml_renderer(struct sd_callbacks *callbacks, struct html_renderopt *options, 
 		rndr_triple_emphasis,
 		rndr_strikethrough,
 		rndr_superscript,
+		rndr_emphasis_b_and_i,
+		rndr_double_emphasis_b_and_i,
+		rndr_triple_emphasis_underscores_b_and_i,
+		rndr_triple_emphasis_asterisks_b_and_i,
 
 		NULL,
 		rndr_normal_text,

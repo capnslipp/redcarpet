@@ -483,11 +483,18 @@ find_emph_char(uint8_t *data, size_t size, uint8_t c)
 static size_t
 parse_emph1(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t size, uint8_t c)
 {
+	int (*render_method)(struct buf *ob, const struct buf *text, void *opaque);
 	size_t i = 0, len;
 	struct buf *work = 0;
 	int r;
 
-	if (!rndr->cb.emphasis) return 0;
+	if (rndr->ext_flags & MKDEXT_B_AND_I_VARIANTS)
+		render_method = (c == '_') ? rndr->cb.emphasis_b_and_i : rndr->cb.emphasis;
+	else
+		render_method = rndr->cb.emphasis;
+
+	if (!render_method)
+		return 0;
 
 	/* skipping one symbol if coming from emph3 */
 	if (size > 1 && data[0] == c && data[1] == c) i = 1;
@@ -507,7 +514,7 @@ parse_emph1(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t size
 
 			work = rndr_newbuf(rndr, BUFFER_SPAN);
 			parse_inline(work, rndr, data, i);
-			r = rndr->cb.emphasis(ob, work, rndr->opaque);
+			r = render_method(ob, work, rndr->opaque);
 			rndr_popbuf(rndr, BUFFER_SPAN);
 			return r ? i + 1 : 0;
 		}
@@ -525,7 +532,14 @@ parse_emph2(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t size
 	struct buf *work = 0;
 	int r;
 
-	render_method = (c == '~') ? rndr->cb.strikethrough : rndr->cb.double_emphasis;
+	if (c == '~') {
+		render_method = rndr->cb.strikethrough;
+	} else {
+		if (rndr->ext_flags & MKDEXT_B_AND_I_VARIANTS)
+			render_method = (c == '_') ? rndr->cb.double_emphasis_b_and_i : rndr->cb.double_emphasis;
+		else
+			render_method = rndr->cb.double_emphasis;
+	}
 
 	if (!render_method)
 		return 0;
@@ -552,8 +566,15 @@ parse_emph2(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t size
 static size_t
 parse_emph3(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t size, uint8_t c)
 {
+	int (*render_method)(struct buf *ob, const struct buf *text, void *opaque);
 	size_t i = 0, len;
 	int r;
+
+	if (rndr->ext_flags & MKDEXT_B_AND_I_VARIANTS) {
+		render_method = (c == '_') ? rndr->cb.triple_emphasis_underscores_b_and_i : rndr->cb.triple_emphasis_asterisks_b_and_i;
+	} else {
+		render_method = rndr->cb.triple_emphasis;
+	}
 
 	while (i < size) {
 		len = find_emph_char(data + i, size - i, c);
@@ -564,12 +585,12 @@ parse_emph3(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t size
 		if (data[i] != c || _isspace(data[i - 1]))
 			continue;
 
-		if (i + 2 < size && data[i + 1] == c && data[i + 2] == c && rndr->cb.triple_emphasis) {
+		if (i + 2 < size && data[i + 1] == c && data[i + 2] == c && render_method) {
 			/* triple symbol found */
 			struct buf *work = rndr_newbuf(rndr, BUFFER_SPAN);
 
 			parse_inline(work, rndr, data, i);
-			r = rndr->cb.triple_emphasis(ob, work, rndr->opaque);
+			r = render_method(ob, work, rndr->opaque);
 			rndr_popbuf(rndr, BUFFER_SPAN);
 			return r ? i + 3 : 0;
 

@@ -15,6 +15,7 @@ module Redcarpet
         :autolink, :codespan, :double_emphasis,
         :emphasis, :raw_html, :triple_emphasis,
         :strikethrough, :superscript,
+        :emphasis_b_and_i, :double_emphasis_b_and_i, :triple_emphasis_underscores_b_and_i, :triple_emphasis_asterisks_b_and_i
 
         # low level rendering
         :entity, :normal_text
