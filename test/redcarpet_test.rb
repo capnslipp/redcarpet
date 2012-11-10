@@ -350,6 +350,20 @@ text
     assert render_with({:no_intra_emphasis => true}, "this also fails: hello_world_#bye") !~ /<em>/
     assert render_with({:no_intra_emphasis => true}, "this works: hello_my_world") !~ /<em>/
   end
+
+  def test_that_b_and_i_variants_flag_works
+    su_html = render_with({:b_and_i_variants => true}, 'Yeah, we hung out. _(Boom boom yeah!)_')
+    html_equal %<<p>Yeah, we hung out. <i>(Boom boom yeah!)</i></p>>, su_html
+    
+    sa_html = render_with({:b_and_i_variants => true}, 'Welcome to *Candy Land*.')
+    html_equal %<<p>Welcome to <em>Candy Land</em>.</p>>, sa_html
+    
+    du_html = render_with({:b_and_i_variants => true}, 'You must remember to __floss your teeth__.')
+    html_equal %<<p>You must remember to <b>floss your teeth</b>.</p>>, du_html
+    
+    da_html = render_with({:b_and_i_variants => true}, '**Attention**: The system is down.')
+    html_equal %<<p><strong>Attention</strong>: The system is down.</p>>, da_html
+  end
 end
 
 class CustomRenderTest < Test::Unit::TestCase
