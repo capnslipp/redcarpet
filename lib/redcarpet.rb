@@ -84,6 +84,7 @@ class RedcarpetCompat
     :filter_styles => :no_styles,
     :safelink => :safe_links_only,
     :space_header => :space_after_headers,
+    :b_and_i_variants => :b_and_i_variants,
     :strikethrough => :strikethrough,
     :tables => :tables,
     :generate_toc => :with_toc_data,
